@@ -1,3 +1,4 @@
+#![allow(non_snake_case)]
 //This struct stores the information needed to access a field inside an instruction
 pub struct FieldInfo {
     pub mask: u16,
@@ -25,7 +26,7 @@ const ADD: ADD = ADD {
 };
 
 //Instruction table aggregates all the instructions inside one struct for easy access
-pub struct INST_TABLE {
+pub struct InstructionTable {
     pub ADD: ADD,
 }
-pub const INST_TABLE: INST_TABLE = INST_TABLE { ADD };
+pub const INST_TABLE: InstructionTable = InstructionTable { ADD };

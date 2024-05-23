@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use super::instruction_table::{FieldInfo, INST_TABLE};
 
 const MEMORY_MAX: usize = 1 << 16;
@@ -59,7 +60,7 @@ impl LC3VM {
         vm
     }
 
-    pub fn run(&mut self, program: Vec<u16>) {
+    pub fn run(&mut self, _program: Vec<u16>) {
         loop {
             let instruction = self.read_instruction();
             let opcode = self.parse_opcode(instruction);
