@@ -1,3 +1,5 @@
+use super::instruction_table::{FieldInfo, INST_TABLE};
+
 const MEMORY_MAX: usize = 1 << 16;
 const PC_START: u16 = 0x3000;
 //Warning, potential bug.
@@ -62,7 +64,7 @@ impl LC3VM {
             let instruction = self.read_instruction();
             let opcode = self.parse_opcode(instruction);
             match opcode {
-                op if op == OP::ADD as u16 => panic!("Add not implemented"),
+                op if op == OP::ADD as u16 => self.process_add(instruction),
                 _ => panic!("Not implemented"),
             };
         }
@@ -78,5 +80,25 @@ impl LC3VM {
 
     fn parse_opcode(&self, instruction: u16) -> u16 {
         (instruction >> 12) as u16
+    }
+
+    fn get_field_value(instruction: u16, field_info: FieldInfo) -> u16 {
+        (instruction >> field_info.shift) & field_info.mask
+    }
+
+    fn process_add(&mut self, instruction: u16) {
+        let dr = Self::get_field_value(instruction, INST_TABLE.ADD.DR);
+        let src1_addr = Self::get_field_value(instruction, INST_TABLE.ADD.SR1);
+        let is_immediate = Self::get_field_value(instruction, INST_TABLE.ADD.MODE) != 0;
+
+        let src2 = match is_immediate {
+            true => Self::get_field_value(instruction, INST_TABLE.ADD.IMM),
+            false => {
+                let addr = Self::get_field_value(instruction, INST_TABLE.ADD.SR2);
+                self.memory[addr as usize]
+            }
+        };
+
+        self.memory[dr as usize] = self.memory[src1_addr as usize] + src2;
     }
 }
