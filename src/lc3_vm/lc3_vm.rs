@@ -116,19 +116,56 @@ impl LC3VM {
         (instruction >> field_info.shift) & field_info.mask
     }
 
+    fn is_negative(x: u16, bit_count: u16) -> bool {
+        (x >> (bit_count - 1) & 1) != 0
+    }
+
+    fn sign_extend(x: u16, bit_count: u16) -> u16 {
+        if Self::is_negative(x, bit_count) {
+            x | (0xFFFF << bit_count)
+        } else {
+            x
+        }
+    }
+
+    fn update_flags(&mut self, r_number: usize) {
+        let value = &self.reg[r_number];
+        println!("Last result is: {value}");
+        if *value == 0 {
+            self.reg[REG::COND as usize] = FLAGS::ZRO as u16;
+        } else if Self::is_negative(*value, 16u16) {
+            self.reg[REG::COND as usize] = FLAGS::NEG as u16;
+        } else {
+            self.reg[REG::COND as usize] = FLAGS::POS as u16;
+        }
+    }
+
     fn process_add(&mut self, instruction: u16) {
         let dr = Self::get_field_value(instruction, INST_TABLE.ADD.DR);
-        let src1_addr = Self::get_field_value(instruction, INST_TABLE.ADD.SR1);
+        let src1_reg = Self::get_field_value(instruction, INST_TABLE.ADD.SR1);
         let is_immediate = Self::get_field_value(instruction, INST_TABLE.ADD.MODE) != 0;
 
         let src2 = match is_immediate {
-            true => Self::get_field_value(instruction, INST_TABLE.ADD.IMM),
+            true => {
+                let imm = Self::get_field_value(instruction, INST_TABLE.ADD.IMM);
+                Self::sign_extend(imm, INST_TABLE.ADD.IMM.size)
+            }
             false => {
-                let addr = Self::get_field_value(instruction, INST_TABLE.ADD.SR2);
-                self.memory[addr as usize]
+                let src2_reg = Self::get_field_value(instruction, INST_TABLE.ADD.SR2);
+                self.reg[src2_reg as usize]
             }
         };
 
-        self.memory[dr as usize] = self.memory[src1_addr as usize] + src2;
+        let a = self.reg[src1_reg as usize];
+        let b = src2;
+
+        let result = ((a as u32 + b as u32) & 0xFFFF) as u16;
+
+        println!("src1_reg={src1_reg}");
+        println!("src1={a}, src2={b}. Sum={result}");
+
+        self.reg[dr as usize] = result;
+
+        self.update_flags(dr as usize);
     }
 }

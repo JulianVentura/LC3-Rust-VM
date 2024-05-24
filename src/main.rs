@@ -12,7 +12,7 @@ pub fn swap16(value: u16) -> u16 {
     value << 8 | value >> 8
 }
 
-fn test_small_add_program() {
+fn add_full_test() {
     let set_register_a: [u8; 16] = [
         0, 0, 0, 1, //opcode
         0, 0, 1, //dr = 1
@@ -26,7 +26,7 @@ fn test_small_add_program() {
         0, 1, 0, //dr = 2
         0, 1, 0, //src1 = 2
         1, //mode = immediate
-        0, 0, 0, 1, 0, //immediate_v = 2
+        1, 1, 1, 1, 1, //immediate_v = -1
     ];
 
     let add_registers: [u8; 16] = [
@@ -65,5 +65,5 @@ fn test_small_add_program() {
 }
 
 fn main() {
-    test_small_add_program()
+    add_full_test()
 }

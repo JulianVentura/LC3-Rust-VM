@@ -3,6 +3,7 @@
 pub struct FieldInfo {
     pub mask: u16,
     pub shift: u16,
+    pub size: u16,
 }
 
 //BEGIN INSTRUCTIONS DECLARATION
@@ -21,22 +22,27 @@ const ADD: ADD = ADD {
     DR: FieldInfo {
         mask: 0x7,
         shift: 9,
+        size: 3,
     },
     SR1: FieldInfo {
         mask: 0x7,
         shift: 6,
+        size: 3,
     },
     MODE: FieldInfo {
         mask: 0x1,
         shift: 5,
+        size: 1,
     },
     SR2: FieldInfo {
         mask: 0x7,
         shift: 0,
+        size: 3,
     },
     IMM: FieldInfo {
         mask: 0x1F,
         shift: 0,
+        size: 5,
     },
 };
 
