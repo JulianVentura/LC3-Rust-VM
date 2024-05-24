@@ -70,9 +70,9 @@ impl LC3VM {
             }
             let instruction = self.read_instruction();
             let opcode = self.parse_opcode(instruction);
-            println!("Opcode is: {}", opcode);
             match opcode {
                 op if op == OP::ADD as u16 => self.process_add(instruction),
+                op if op == OP::AND as u16 => self.process_and(instruction),
                 op if op == OP::LDI as u16 => self.process_ldi(instruction),
                 op if op == OP::TRAP as u16 => break,
                 _ => panic!("Not implemented"),
@@ -169,6 +169,27 @@ impl LC3VM {
         let extended_pc_off = Self::sign_extend(pc_off, INST_TABLE.LDI.PCOFFSET.size);
         let address = self.reg[REG::PC as usize] + extended_pc_off;
         self.reg[dr as usize] = self.memory[address as usize];
+        self.update_flags(dr as usize);
+    }
+
+    fn process_and(&mut self, instruction: u16) {
+        let dr = Self::get_field_value(instruction, INST_TABLE.AND.DR);
+        let src1_reg = Self::get_field_value(instruction, INST_TABLE.AND.SR1);
+        let is_immediate = Self::get_field_value(instruction, INST_TABLE.AND.MODE) != 0;
+
+        let src2 = match is_immediate {
+            true => {
+                let imm = Self::get_field_value(instruction, INST_TABLE.AND.IMM);
+                Self::sign_extend(imm, INST_TABLE.AND.IMM.size)
+            }
+            false => {
+                let src2_reg = Self::get_field_value(instruction, INST_TABLE.AND.SR2);
+                self.reg[src2_reg as usize]
+            }
+        };
+
+        let src1 = self.reg[src1_reg as usize];
+        self.reg[dr as usize] = ((src1 as u32 & src2 as u32) & 0xFFFF) as u16;
         self.update_flags(dr as usize);
     }
 }

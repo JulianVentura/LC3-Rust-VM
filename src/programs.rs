@@ -67,6 +67,59 @@ pub fn add_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
     construct_program(&raw_program)
 }
 
+pub fn and_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
+    let set_register_a: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 0, 1, //dr = 1
+        0, 0, 1, //src1 = 1
+        1, //mode = immediate
+        0, 0, 0, 0, 1, //immediate_v = 1
+    ];
+
+    let set_register_b: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 1, 0, //dr = 2
+        0, 1, 0, //src1 = 2
+        1, //mode = immediate
+        1, 1, 1, 1, 1, //immediate_v = -1
+    ];
+
+    let and_immediate: [u8; 16] = [
+        0, 1, 0, 1, //opcode
+        0, 1, 1, //dr = 2
+        0, 1, 0, //src1 = 1
+        1, //mode = immediate
+        0, 0, 1, 1, 1, //immediate_v = -1
+    ];
+
+    let and_registers: [u8; 16] = [
+        0, 1, 0, 1, //opcode
+        1, 0, 0, //dr = 2
+        0, 0, 1, //src1 = 1
+        0, //mode = add2
+        0, 0, //empty bits
+        0, 1, 0, //src2 = 2
+    ];
+
+    let stop_execution: [u8; 16] = [
+        1, 1, 1, 1, //opcode
+        0, 0, 0, //
+        0, 0, 0, //
+        0, //
+        0, 0, 0, 0, 0, //
+    ];
+
+    let raw_program = [
+        set_register_a, //
+        set_register_b, //
+        and_immediate,  //
+        and_registers,  //
+        stop_execution, //
+    ];
+
+    construct_program(&raw_program)
+}
+
 pub fn ldi_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
     let nop: [u8; 16] = [
         0, 0, 0, 1, //opcode
