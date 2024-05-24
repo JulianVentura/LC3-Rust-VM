@@ -16,6 +16,10 @@ pub struct ADD {
     pub SR2: FieldInfo,
     pub IMM: FieldInfo,
 }
+pub struct LDI {
+    pub DR: FieldInfo,
+    pub PCOFFSET: FieldInfo,
+}
 
 //BEGIN INSTRUCTIONS DEFINITION
 const ADD: ADD = ADD {
@@ -46,8 +50,22 @@ const ADD: ADD = ADD {
     },
 };
 
+const LDI: LDI = LDI {
+    DR: FieldInfo {
+        mask: 0x7,
+        shift: 9,
+        size: 3,
+    },
+    PCOFFSET: FieldInfo {
+        mask: 0x1FF,
+        shift: 0,
+        size: 9,
+    },
+};
+
 //Instruction table aggregates all the instructions inside one struct for easy access
 pub struct InstructionTable {
     pub ADD: ADD,
+    pub LDI: LDI,
 }
-pub const INST_TABLE: InstructionTable = InstructionTable { ADD };
+pub const INST_TABLE: InstructionTable = InstructionTable { ADD, LDI };
