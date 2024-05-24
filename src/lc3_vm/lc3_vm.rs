@@ -140,6 +140,8 @@ impl LC3VM {
         }
     }
 
+    // OPERATION HANDLERS
+
     fn process_add(&mut self, instruction: u16) {
         let dr = Self::get_field_value(instruction, INST_TABLE.ADD.DR);
         let src1_reg = Self::get_field_value(instruction, INST_TABLE.ADD.SR1);
@@ -155,17 +157,8 @@ impl LC3VM {
                 self.reg[src2_reg as usize]
             }
         };
-
-        let a = self.reg[src1_reg as usize];
-        let b = src2;
-
-        let result = ((a as u32 + b as u32) & 0xFFFF) as u16;
-
-        println!("src1_reg={src1_reg}");
-        println!("src1={a}, src2={b}. Sum={result}");
-
-        self.reg[dr as usize] = result;
-
+        let src1 = self.reg[src1_reg as usize];
+        self.reg[dr as usize] = ((src1 as u32 + src2 as u32) & 0xFFFF) as u16;
         self.update_flags(dr as usize);
     }
 }
