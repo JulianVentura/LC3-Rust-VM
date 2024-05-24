@@ -153,6 +153,47 @@ pub fn not_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
     construct_program(&raw_program)
 }
 
+pub fn br_loop_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
+    let set_register_a: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 0, 1, //dr = 1
+        0, 0, 1, //src1 = 1
+        1, //mode = immediate
+        0, 0, 1, 0, 0, //immediate_v = 4
+    ];
+
+    let branch_positive: [u8; 16] = [
+        0, 0, 0, 0, //opcode
+        0, 0, 1, //cond = positive
+        1, 1, 1, 1, 1, 1, 1, 1, 0, //immediate_v = -1
+    ];
+
+    let subtract_one: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 0, 1, //dr = 2
+        0, 0, 1, //src1 = 1
+        1, //mode = immediate
+        1, 1, 1, 1, 1, //immediate_v = 4
+    ];
+
+    let stop_execution: [u8; 16] = [
+        1, 1, 1, 1, //opcode
+        0, 0, 0, //
+        0, 0, 0, //
+        0, //
+        0, 0, 0, 0, 0, //
+    ];
+
+    let raw_program = [
+        set_register_a,  //
+        subtract_one,    //
+        branch_positive, //
+        stop_execution,  //
+    ];
+
+    construct_program(&raw_program)
+}
+
 pub fn ldi_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
     let nop: [u8; 16] = [
         0, 0, 0, 1, //opcode

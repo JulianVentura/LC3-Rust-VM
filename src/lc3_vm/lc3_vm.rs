@@ -74,6 +74,7 @@ impl LC3VM {
                 op if op == OP::ADD as u16 => self.process_add(instruction),
                 op if op == OP::AND as u16 => self.process_and(instruction),
                 op if op == OP::NOT as u16 => self.process_not(instruction),
+                op if op == OP::BR as u16 => self.process_br(instruction),
                 op if op == OP::LDI as u16 => self.process_ldi(instruction),
                 op if op == OP::TRAP as u16 => break,
                 _ => panic!("Not implemented"),
@@ -132,7 +133,6 @@ impl LC3VM {
 
     fn update_flags(&mut self, r_number: usize) {
         let value = &self.reg[r_number];
-        println!("Last result is: {value}");
         if *value == 0 {
             self.reg[REG::COND as usize] = FLAGS::ZRO as u16;
         } else if Self::is_negative(*value, 16u16) {
@@ -160,7 +160,7 @@ impl LC3VM {
             }
         };
         let src1 = self.reg[src1_reg as usize];
-        self.reg[dr as usize] = ((src1 as u32 + src2 as u32) & 0xFFFF) as u16;
+        self.reg[dr as usize] = Self::sum(src1, src2);
         self.update_flags(dr as usize);
     }
 
@@ -197,8 +197,22 @@ impl LC3VM {
     fn process_not(&mut self, instruction: u16) {
         let dr = Self::get_field_value(instruction, INST_TABLE.NOT.DR);
         let src_reg = Self::get_field_value(instruction, INST_TABLE.NOT.SR);
-
         self.reg[dr as usize] = !self.reg[src_reg as usize];
         self.update_flags(dr as usize);
+    }
+
+    fn process_br(&mut self, instruction: u16) {
+        let cond_flag = Self::get_field_value(instruction, INST_TABLE.BR.CONDFL);
+        let pc_off = Self::get_field_value(instruction, INST_TABLE.BR.PCOFFSET);
+        let extended_pc_off = Self::sign_extend(pc_off, INST_TABLE.LDI.PCOFFSET.size);
+        let jump = (cond_flag & self.reg[REG::COND as usize]) != 0;
+
+        if jump {
+            self.reg[REG::PC as usize] = Self::sum(self.reg[REG::PC as usize], extended_pc_off);
+        }
+    }
+
+    fn sum(a: u16, b: u16) -> u16 {
+        ((a as u32 + b as u32) & 0xFFFF) as u16
     }
 }
