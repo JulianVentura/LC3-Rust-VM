@@ -95,7 +95,7 @@ impl LC3VM {
         println!("");
         println!("MEMORY: ");
         let from = 0; //PC_START as usize;
-        let to = from + 64;
+        let to = from + 100;
         for (idx, line) in self.memory[from..to].iter().enumerate() {
             println!("[{:0>4}] {}", idx + from, line);
         }
@@ -170,8 +170,8 @@ impl LC3VM {
         let dr = Self::get_field_value(instruction, INST_TABLE.LDI.DR);
         let pc_off = Self::get_field_value(instruction, INST_TABLE.LDI.PCOFFSET);
         let extended_pc_off = Self::sign_extend(pc_off, INST_TABLE.LDI.PCOFFSET.size);
-        let address = self.reg[REG::PC as usize] + extended_pc_off;
-        self.reg[dr as usize] = self.memory[address as usize];
+        let address = Self::sum(self.reg[REG::PC as usize], extended_pc_off);
+        self.reg[dr as usize] = self.memory[self.memory[address as usize] as usize];
         self.update_flags(dr as usize);
     }
 

@@ -206,13 +206,13 @@ pub fn ldi_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
     let ldi: [u8; 16] = [
         1, 0, 1, 0, //opcode
         0, 0, 0, //dr = 0
-        0, 0, 0, 0, 0, 0, 1, 0, 0, //pcoffset = 4
+        0, 0, 0, 0, 0, 0, 0, 1, 1, //pcoffset = 3
     ];
 
     // PC_START + 5 = 64 + 5 = 69
     let value_address: [u8; 16] = [
         0, 0, 0, 0, 0, 0, 0, 0, //
-        0, 0, 1, 0, 0, 1, 0, 1, //
+        0, 1, 0, 0, 0, 1, 0, 1, //
     ];
 
     // 23
@@ -245,7 +245,7 @@ pub fn ldi_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
         nop,            //
         nop,            //
         stop_execution, //
-        value_address,
+        value_address,  //
         value,
     ];
 
