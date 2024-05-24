@@ -75,6 +75,7 @@ impl LC3VM {
                 op if op == OP::AND as u16 => self.process_and(instruction),
                 op if op == OP::NOT as u16 => self.process_not(instruction),
                 op if op == OP::BR as u16 => self.process_br(instruction),
+                op if op == OP::JMP as u16 => self.process_jmp(instruction),
                 op if op == OP::LDI as u16 => self.process_ldi(instruction),
                 op if op == OP::TRAP as u16 => break,
                 _ => panic!("Not implemented"),
@@ -210,6 +211,11 @@ impl LC3VM {
         if jump {
             self.reg[REG::PC as usize] = Self::sum(self.reg[REG::PC as usize], extended_pc_off);
         }
+    }
+
+    fn process_jmp(&mut self, instruction: u16) {
+        let reg = Self::get_field_value(instruction, INST_TABLE.JMP.BASE);
+        self.reg[REG::PC as usize] = self.reg[reg as usize]
     }
 
     fn sum(a: u16, b: u16) -> u16 {
