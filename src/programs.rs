@@ -251,3 +251,61 @@ pub fn ldi_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
 
     construct_program(&raw_program)
 }
+
+pub fn ld_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
+    let nop: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 0, 1, //dr = 1
+        0, 0, 1, //src1 = 1
+        1, //mode = immediate
+        0, 0, 0, 0, 0, //immediate_v = 1
+    ];
+
+    let ld: [u8; 16] = [
+        0, 0, 1, 0, //opcode
+        0, 0, 0, //dr = 0
+        0, 0, 0, 0, 0, 0, 0, 1, 1, //pcoffset = 3
+    ];
+
+    // PC_START + 5 = 64 + 5 = 69
+    let value_address: [u8; 16] = [
+        0, 0, 0, 0, 0, 0, 0, 0, //
+        0, 1, 0, 0, 0, 1, 0, 1, //
+    ];
+
+    // 23
+    let value: [u8; 16] = [
+        0, 0, 0, 0, 0, 0, 0, 0, //
+        0, 0, 0, 1, 0, 1, 1, 1, //
+    ];
+
+    let stop_execution: [u8; 16] = [
+        1, 1, 1, 1, //opcode
+        0, 0, 0, //
+        0, 0, 0, //
+        0, //
+        0, 0, 0, 0, 0, //
+    ];
+
+    /*
+    [
+        64: LD R0 4
+        65: NOP
+        66: NOP
+        67: STOP
+        68: 69
+        69: 23
+    ]
+    */
+
+    let raw_program = [
+        ld,             //
+        nop,            //
+        nop,            //
+        stop_execution, //
+        value_address,  //
+        value,
+    ];
+
+    construct_program(&raw_program)
+}
