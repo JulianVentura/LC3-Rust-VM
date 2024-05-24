@@ -12,29 +12,58 @@ pub fn swap16(value: u16) -> u16 {
     value << 8 | value >> 8
 }
 
-fn test_add_instruction() {
-    let add_instruction: [u8; 16] = [
+fn test_small_add_program() {
+    let set_register_a: [u8; 16] = [
         0, 0, 0, 1, //opcode
-        0, 1, 0, //dr = 2
+        0, 0, 1, //dr = 1
         0, 0, 1, //src1 = 1
         1, //mode = immediate
-        0, 0, 0, 1, 0, //immediate value
+        0, 0, 0, 0, 1, //immediate_v = 1
     ];
 
-    let raw_program = [add_instruction, add_instruction];
+    let set_register_b: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 1, 0, //dr = 2
+        0, 1, 0, //src1 = 2
+        1, //mode = immediate
+        0, 0, 0, 1, 0, //immediate_v = 2
+    ];
+
+    let add_registers: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 1, 1, //dr = 2
+        0, 0, 1, //src1 = 1
+        0, //mode = add2
+        0, 0, //empty bits
+        0, 1, 0, //src2 = 2
+    ];
+
+    let stop_execution: [u8; 16] = [
+        1, 1, 1, 1, //opcode
+        0, 0, 0, //
+        0, 0, 0, //
+        0, //
+        0, 0, 0, 0, 0, //
+    ];
+
+    let raw_program = [
+        set_register_a, //
+        set_register_b, //
+        add_registers,  //
+        stop_execution, //
+    ];
 
     let mut program: [u16; lc3_vm::MAX_PROGRAM_SIZE] = [0u16; lc3_vm::MAX_PROGRAM_SIZE];
 
     let program_len = raw_program.len();
     for i in 0..program_len {
-        program[i] = swap16(binary_to_u16(&raw_program[i]));
+        program[i] = binary_to_u16(&raw_program[i]);
     }
 
-    let vm = lc3_vm::LC3VM::new(program);
-
-    vm.print_state();
+    let mut vm = lc3_vm::LC3VM::new(program);
+    vm.run(true);
 }
 
 fn main() {
-    test_add_instruction()
+    test_small_add_program()
 }

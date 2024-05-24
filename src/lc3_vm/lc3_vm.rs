@@ -35,7 +35,7 @@ enum OP {
     JMP,
     RES,
     LEA,
-    TRAP,
+    TRAP, //TODO: Remove. For now, this will help me to stop the VM execution.
 }
 
 enum FLAGS {
@@ -59,22 +59,27 @@ impl LC3VM {
         };
 
         vm.reg[REG::COND as usize] = FLAGS::ZRO as u16;
-        vm.memory[REG::PC as usize] = PC_START;
+        vm.reg[REG::PC as usize] = PC_START;
         vm
     }
 
-    pub fn run(&mut self, _program: Vec<u16>, debug: bool) {
+    pub fn run(&mut self, debug: bool) {
         loop {
             if debug {
                 self.print_state();
             }
             let instruction = self.read_instruction();
             let opcode = self.parse_opcode(instruction);
+            println!("Opcode is: {}", opcode);
             match opcode {
                 op if op == OP::ADD as u16 => self.process_add(instruction),
+                op if op == OP::TRAP as u16 => break,
                 _ => panic!("Not implemented"),
             };
         }
+
+        println!("Execution finished");
+        self.print_state();
     }
 
     pub fn print_state(&self) {
@@ -84,8 +89,8 @@ impl LC3VM {
         }
         println!("");
         println!("MEMORY: ");
-        let from = PC_START as usize;
-        let to = from + 256;
+        let from = 0; //PC_START as usize;
+        let to = from + 64;
         for (idx, line) in self.memory[from..to].iter().enumerate() {
             println!("[{:0>4}] {}", idx + from, line);
         }
@@ -96,7 +101,7 @@ impl LC3VM {
     }
 
     fn read_instruction(&mut self) -> u16 {
-        let pc = &mut self.reg[REG::COUNT as usize];
+        let pc = &mut self.reg[REG::PC as usize];
         let instruction = self.memory[*pc as usize];
         *pc += 1;
 

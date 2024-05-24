@@ -18,11 +18,26 @@ pub struct ADD {
 
 //BEGIN INSTRUCTIONS DEFINITION
 const ADD: ADD = ADD {
-    DR: FieldInfo { mask: 7, shift: 9 },
-    SR1: FieldInfo { mask: 7, shift: 6 },
-    MODE: FieldInfo { mask: 1, shift: 5 },
-    SR2: FieldInfo { mask: 7, shift: 0 },
-    IMM: FieldInfo { mask: 31, shift: 0 },
+    DR: FieldInfo {
+        mask: 0x7,
+        shift: 9,
+    },
+    SR1: FieldInfo {
+        mask: 0x7,
+        shift: 6,
+    },
+    MODE: FieldInfo {
+        mask: 0x1,
+        shift: 5,
+    },
+    SR2: FieldInfo {
+        mask: 0x7,
+        shift: 0,
+    },
+    IMM: FieldInfo {
+        mask: 0x1F,
+        shift: 0,
+    },
 };
 
 //Instruction table aggregates all the instructions inside one struct for easy access
