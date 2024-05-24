@@ -1,8 +1,8 @@
 #![allow(dead_code)]
+use super::constants::{MEMORY_MAX, PC_START};
 use super::instruction_table::{FieldInfo, INST_TABLE};
+use super::MAX_PROGRAM_SIZE;
 
-const MEMORY_MAX: usize = 1 << 16;
-const PC_START: u16 = 0x3000;
 //Warning, potential bug.
 //It would be nicer to have this directly linked to the REG enum
 const REG_COUNT: usize = 11;
@@ -49,9 +49,12 @@ pub struct LC3VM {
 }
 
 impl LC3VM {
-    pub fn new() -> Self {
+    pub fn new(program: [u16; MAX_PROGRAM_SIZE]) -> Self {
+        let mut memory: [u16; MEMORY_MAX] = [0u16; MEMORY_MAX];
+        memory[(PC_START as usize)..].copy_from_slice(&program);
+
         let mut vm = LC3VM {
-            memory: [0; MEMORY_MAX],
+            memory,
             reg: [0; REG_COUNT],
         };
 
@@ -60,8 +63,11 @@ impl LC3VM {
         vm
     }
 
-    pub fn run(&mut self, _program: Vec<u16>) {
+    pub fn run(&mut self, _program: Vec<u16>, debug: bool) {
         loop {
+            if debug {
+                self.print_state();
+            }
             let instruction = self.read_instruction();
             let opcode = self.parse_opcode(instruction);
             match opcode {
@@ -69,6 +75,22 @@ impl LC3VM {
                 _ => panic!("Not implemented"),
             };
         }
+    }
+
+    pub fn print_state(&self) {
+        println!("REGISTERS: ");
+        for (idx, line) in self.reg.iter().enumerate() {
+            println!("[{idx}] {:#018b}", line);
+        }
+        println!("");
+        println!("MEMORY: ");
+        for (idx, line) in self.memory.iter().skip(PC_START as usize).enumerate() {
+            println!("[{idx}] {:#018b}", line);
+        }
+
+        println!("");
+        println!("-----------------------------------");
+        println!("");
     }
 
     fn read_instruction(&mut self) -> u16 {
