@@ -76,6 +76,7 @@ impl LC3VM {
                 op if op == OP::NOT as u16 => self.process_not(instruction),
                 op if op == OP::BR as u16 => self.process_br(instruction),
                 op if op == OP::JMP as u16 => self.process_jmp(instruction),
+                op if op == OP::JSR as u16 => self.process_jsr(instruction),
                 op if op == OP::LDI as u16 => self.process_ldi(instruction),
                 op if op == OP::TRAP as u16 => break,
                 _ => panic!("Not implemented"),
@@ -216,6 +217,23 @@ impl LC3VM {
     fn process_jmp(&mut self, instruction: u16) {
         let reg = Self::get_field_value(instruction, INST_TABLE.JMP.BASE);
         self.reg[REG::PC as usize] = self.reg[reg as usize]
+    }
+
+    fn process_jsr(&mut self, instruction: u16) {
+        let is_imm = Self::get_field_value(instruction, INST_TABLE.JSR.LONGFL) != 0;
+        self.reg[REG::R7 as usize] = self.reg[REG::PC as usize];
+        let src2 = match is_imm {
+            true => {
+                let pc_off = Self::get_field_value(instruction, INST_TABLE.JSR.PCOFFSET);
+                Self::sign_extend(pc_off, INST_TABLE.JSR.PCOFFSET.size)
+            }
+            false => {
+                let src2_reg = Self::get_field_value(instruction, INST_TABLE.JSR.BASER);
+                self.reg[src2_reg as usize]
+            }
+        };
+
+        self.reg[REG::PC as usize] = Self::sum(self.reg[REG::PC as usize], src2);
     }
 
     fn sum(a: u16, b: u16) -> u16 {

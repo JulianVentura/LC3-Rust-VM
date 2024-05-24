@@ -38,6 +38,11 @@ pub struct BR {
 pub struct JMP {
     pub BASE: FieldInfo,
 }
+pub struct JSR {
+    pub LONGFL: FieldInfo,
+    pub PCOFFSET: FieldInfo,
+    pub BASER: FieldInfo,
+}
 
 //BEGIN INSTRUCTIONS DEFINITION
 const ADD: ADD = ADD {
@@ -143,6 +148,24 @@ const JMP: JMP = JMP {
     },
 };
 
+const JSR: JSR = JSR {
+    LONGFL: FieldInfo {
+        mask: 0x1,
+        shift: 11,
+        size: 1,
+    },
+    PCOFFSET: FieldInfo {
+        mask: 0x3FF,
+        shift: 0,
+        size: 11,
+    },
+    BASER: FieldInfo {
+        mask: 0x7,
+        shift: 6,
+        size: 3,
+    },
+};
+
 //Instruction table aggregates all the instructions inside one struct for easy access
 pub struct InstructionTable {
     pub ADD: ADD,
@@ -150,6 +173,7 @@ pub struct InstructionTable {
     pub NOT: NOT,
     pub BR: BR,
     pub JMP: JMP,
+    pub JSR: JSR,
     pub LDI: LDI,
 }
 pub const INST_TABLE: InstructionTable = InstructionTable {
@@ -158,5 +182,6 @@ pub const INST_TABLE: InstructionTable = InstructionTable {
     NOT,
     BR,
     JMP,
+    JSR,
     LDI,
 };
