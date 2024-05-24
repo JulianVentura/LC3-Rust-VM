@@ -23,6 +23,10 @@ pub struct AND {
     pub SR2: FieldInfo,
     pub IMM: FieldInfo,
 }
+pub struct NOT {
+    pub DR: FieldInfo,
+    pub SR: FieldInfo,
+}
 pub struct LDI {
     pub DR: FieldInfo,
     pub PCOFFSET: FieldInfo,
@@ -85,6 +89,19 @@ const AND: AND = AND {
     },
 };
 
+const NOT: NOT = NOT {
+    DR: FieldInfo {
+        mask: 0x7,
+        shift: 9,
+        size: 3,
+    },
+    SR: FieldInfo {
+        mask: 0x7,
+        shift: 6,
+        size: 3,
+    },
+};
+
 const LDI: LDI = LDI {
     DR: FieldInfo {
         mask: 0x7,
@@ -102,6 +119,7 @@ const LDI: LDI = LDI {
 pub struct InstructionTable {
     pub ADD: ADD,
     pub AND: AND,
+    pub NOT: NOT,
     pub LDI: LDI,
 }
-pub const INST_TABLE: InstructionTable = InstructionTable { ADD, AND, LDI };
+pub const INST_TABLE: InstructionTable = InstructionTable { ADD, AND, NOT, LDI };

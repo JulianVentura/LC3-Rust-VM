@@ -120,6 +120,39 @@ pub fn and_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
     construct_program(&raw_program)
 }
 
+pub fn not_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
+    let set_register_a: [u8; 16] = [
+        0, 0, 0, 1, //opcode
+        0, 0, 1, //dr = 1
+        0, 0, 1, //src1 = 1
+        1, //mode = immediate
+        1, 1, 0, 1, 0, //immediate_v = 1
+    ];
+
+    let not: [u8; 16] = [
+        1, 0, 0, 1, //opcode
+        0, 1, 0, //dr = 2
+        0, 0, 1, //src = 1
+        1, 1, 1, 1, 1, 1, // non used bits
+    ];
+
+    let stop_execution: [u8; 16] = [
+        1, 1, 1, 1, //opcode
+        0, 0, 0, //
+        0, 0, 0, //
+        0, //
+        0, 0, 0, 0, 0, //
+    ];
+
+    let raw_program = [
+        set_register_a, //
+        not,            //
+        stop_execution, //
+    ];
+
+    construct_program(&raw_program)
+}
+
 pub fn ldi_full_test() -> [u16; lc3_vm::MAX_PROGRAM_SIZE] {
     let nop: [u8; 16] = [
         0, 0, 0, 1, //opcode

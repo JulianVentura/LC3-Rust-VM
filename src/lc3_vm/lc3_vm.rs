@@ -73,6 +73,7 @@ impl LC3VM {
             match opcode {
                 op if op == OP::ADD as u16 => self.process_add(instruction),
                 op if op == OP::AND as u16 => self.process_and(instruction),
+                op if op == OP::NOT as u16 => self.process_not(instruction),
                 op if op == OP::LDI as u16 => self.process_ldi(instruction),
                 op if op == OP::TRAP as u16 => break,
                 _ => panic!("Not implemented"),
@@ -190,6 +191,14 @@ impl LC3VM {
 
         let src1 = self.reg[src1_reg as usize];
         self.reg[dr as usize] = ((src1 as u32 & src2 as u32) & 0xFFFF) as u16;
+        self.update_flags(dr as usize);
+    }
+
+    fn process_not(&mut self, instruction: u16) {
+        let dr = Self::get_field_value(instruction, INST_TABLE.NOT.DR);
+        let src_reg = Self::get_field_value(instruction, INST_TABLE.NOT.SR);
+
+        self.reg[dr as usize] = !self.reg[src_reg as usize];
         self.update_flags(dr as usize);
     }
 }
