@@ -80,12 +80,14 @@ impl LC3VM {
     pub fn print_state(&self) {
         println!("REGISTERS: ");
         for (idx, line) in self.reg.iter().enumerate() {
-            println!("[{idx}] {:#018b}", line);
+            println!("[{:0>4}] {}", idx, line);
         }
         println!("");
         println!("MEMORY: ");
-        for (idx, line) in self.memory.iter().skip(PC_START as usize).enumerate() {
-            println!("[{idx}] {:#018b}", line);
+        let from = PC_START as usize;
+        let to = from + 256;
+        for (idx, line) in self.memory[from..to].iter().enumerate() {
+            println!("[{:0>4}] {}", idx + from, line);
         }
 
         println!("");
