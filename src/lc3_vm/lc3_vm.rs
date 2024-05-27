@@ -358,6 +358,19 @@ impl LC3VM {
         Self::putc(c);
     }
 
+    fn trap_in(&mut self) {
+        println!("Enter a character: ");
+
+        match Self::getchar() {
+            Some(c) => {
+                Self::putc(c);
+                self.reg[REG::R0 as usize] = c;
+                self.update_flags(REG::R0 as usize);
+            }
+            None => panic!("Input char error"),
+        };
+    }
+
     fn putc(char: u16) {
         let converted_char = char::from_u32(char as u32);
 
