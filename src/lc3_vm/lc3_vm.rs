@@ -82,6 +82,7 @@ impl LC3VM {
                 op if op == OP::LDR as u16 => self.process_ldr(instruction),
                 op if op == OP::LEA as u16 => self.process_lea(instruction),
                 op if op == OP::ST as u16 => self.process_st(instruction),
+                op if op == OP::STI as u16 => self.process_sti(instruction),
                 op if op == OP::TRAP as u16 => break,
                 _ => panic!("Not implemented"),
             };
@@ -274,6 +275,16 @@ impl LC3VM {
         let extended_off = Self::sign_extend(off, INST_TABLE.ST.OFFSET.size);
         let address = Self::sum(self.reg[REG::PC as usize], extended_off);
         self.memory[address as usize] = self.reg[sr as usize];
+    }
+
+    fn process_sti(&mut self, instruction: u16) {
+        let sr = Self::get_field_value(instruction, INST_TABLE.STI.SR);
+        let off = Self::get_field_value(instruction, INST_TABLE.STI.OFFSET);
+        let extended_off = Self::sign_extend(off, INST_TABLE.STI.OFFSET.size);
+        let address = Self::sum(self.reg[REG::PC as usize], extended_off);
+
+        let mem_write_address = self.memory[address as usize];
+        self.memory[mem_write_address as usize] = self.reg[sr as usize];
     }
 
     fn sum(a: u16, b: u16) -> u16 {
