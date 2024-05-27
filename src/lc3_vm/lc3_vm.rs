@@ -322,6 +322,8 @@ impl LC3VM {
             code if code == TRAP::PUTS as u16 => self.trap_puts(),
             code if code == TRAP::GETC as u16 => self.trap_getc(),
             code if code == TRAP::OUT as u16 => self.trap_out(),
+            code if code == TRAP::IN as u16 => self.trap_in(),
+            code if code == TRAP::PUTSP as u16 => self.trap_putsp(),
             code if code == TRAP::HALT as u16 => {
                 keep_going = false;
             }
@@ -369,6 +371,25 @@ impl LC3VM {
             }
             None => panic!("Input char error"),
         };
+    }
+
+    fn trap_putsp(&mut self) {
+        let mut address = self.reg[REG::R0 as usize];
+
+        loop {
+            let c = self.memory[address as usize];
+            if c == 0 {
+                return;
+            }
+            let c1 = c & 0xFF;
+            Self::putc(c1);
+            let c2 = c >> 8;
+            if c2 != 0 {
+                Self::putc(c2);
+            }
+
+            address += 1
+        }
     }
 
     fn putc(char: u16) {
