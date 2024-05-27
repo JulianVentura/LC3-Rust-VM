@@ -35,6 +35,11 @@ pub struct LD {
     pub DR: FieldInfo,
     pub PCOFFSET: FieldInfo,
 }
+pub struct LDR {
+    pub DR: FieldInfo,
+    pub BASER: FieldInfo,
+    pub OFFSET: FieldInfo,
+}
 pub struct BR {
     pub CONDFL: FieldInfo,
     pub PCOFFSET: FieldInfo,
@@ -157,6 +162,24 @@ const LD: LD = LD {
     },
 };
 
+const LDR: LDR = LDR {
+    DR: FieldInfo {
+        mask: 0x7,
+        shift: 9,
+        size: 3,
+    },
+    BASER: FieldInfo {
+        mask: 0x7,
+        shift: 0,
+        size: 3,
+    },
+    OFFSET: FieldInfo {
+        mask: 0x1F,
+        shift: 0,
+        size: 6,
+    },
+};
+
 const JMP: JMP = JMP {
     BASE: FieldInfo {
         mask: 0x7,
@@ -193,6 +216,7 @@ pub struct InstructionTable {
     pub JSR: JSR,
     pub LDI: LDI,
     pub LD: LD,
+    pub LDR: LDR,
 }
 pub const INST_TABLE: InstructionTable = InstructionTable {
     ADD,
@@ -203,4 +227,5 @@ pub const INST_TABLE: InstructionTable = InstructionTable {
     JSR,
     LDI,
     LD,
+    LDR,
 };
