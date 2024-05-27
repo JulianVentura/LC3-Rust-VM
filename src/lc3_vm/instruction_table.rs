@@ -69,6 +69,9 @@ pub struct JSR {
     pub PCOFFSET: FieldInfo,
     pub BASER: FieldInfo,
 }
+pub struct TRAP {
+    pub CODE: FieldInfo,
+}
 
 //BEGIN INSTRUCTIONS DEFINITION
 const ADD: ADD = ADD {
@@ -280,6 +283,14 @@ const JSR: JSR = JSR {
     },
 };
 
+const TRAP: TRAP = TRAP {
+    CODE: FieldInfo {
+        mask: 0xFF,
+        shift: 0,
+        size: 8,
+    },
+};
+
 //Instruction table aggregates all the instructions inside one struct for easy access
 pub struct InstructionTable {
     pub ADD: ADD,
@@ -295,6 +306,7 @@ pub struct InstructionTable {
     pub ST: ST,
     pub STI: STI,
     pub STR: STR,
+    pub TRAP: TRAP,
 }
 pub const INST_TABLE: InstructionTable = InstructionTable {
     ADD,
@@ -310,4 +322,5 @@ pub const INST_TABLE: InstructionTable = InstructionTable {
     ST,
     STI,
     STR,
+    TRAP,
 };

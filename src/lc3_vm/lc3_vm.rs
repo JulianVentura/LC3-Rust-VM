@@ -38,6 +38,15 @@ enum OP {
     TRAP, //TODO: Remove. For now, this will help me to stop the VM execution.
 }
 
+enum TRAP {
+    GETC = 0x20,  /* get character from keyboard, not echoed onto the terminal */
+    OUT = 0x21,   /* output a character */
+    PUTS = 0x22,  /* output a word string */
+    IN = 0x23,    /* get character from keyboard, echoed onto the terminal */
+    PUTSP = 0x24, /* output a byte string */
+    HALT = 0x25,  /* halt the program */
+}
+
 enum FLAGS {
     POS = 1 << 0,
     ZRO = 1 << 1,
@@ -84,7 +93,12 @@ impl LC3VM {
                 op if op == OP::ST as u16 => self.process_st(instruction),
                 op if op == OP::STI as u16 => self.process_sti(instruction),
                 op if op == OP::STR as u16 => self.process_str(instruction),
-                op if op == OP::TRAP as u16 => break,
+                op if op == OP::TRAP as u16 => {
+                    let keep_going = self.process_trap(instruction);
+                    if !keep_going {
+                        break;
+                    }
+                }
                 _ => panic!("Not implemented"),
             };
         }
@@ -296,6 +310,17 @@ impl LC3VM {
         let address = Self::sum(base_r, extended_off);
 
         self.memory[address as usize] = self.reg[sr as usize];
+    }
+
+    fn process_trap(&mut self, instruction: u16) -> bool {
+        let trap_code = Self::get_field_value(instruction, INST_TABLE.TRAP.CODE);
+
+        let mut keep_going = true;
+
+        match trap_code {
+            _ => {}
+        };
+        keep_going
     }
 
     fn sum(a: u16, b: u16) -> u16 {
