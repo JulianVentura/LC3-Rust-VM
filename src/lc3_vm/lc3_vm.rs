@@ -321,6 +321,7 @@ impl LC3VM {
         match trap_code {
             code if code == TRAP::PUTS as u16 => self.trap_puts(),
             code if code == TRAP::GETC as u16 => self.trap_getc(),
+            code if code == TRAP::OUT as u16 => self.trap_out(),
             code if code == TRAP::HALT as u16 => {
                 keep_going = false;
             }
@@ -339,13 +340,7 @@ impl LC3VM {
                 return;
             }
 
-            let converted_char = char::from_u32(c as u32);
-
-            if let Some(c) = converted_char {
-                print!("{c}");
-            }
-
-            let _ = io::stdout().flush();
+            Self::putc(c);
 
             mem_address += 1;
         }
@@ -356,6 +351,21 @@ impl LC3VM {
             self.reg[REG::R0 as usize] = c;
             self.update_flags(REG::R0 as usize);
         }
+    }
+
+    fn trap_out(&mut self) {
+        let c = self.reg[REG::R0 as usize];
+        Self::putc(c);
+    }
+
+    fn putc(char: u16) {
+        let converted_char = char::from_u32(char as u32);
+
+        if let Some(c) = converted_char {
+            print!("{c}");
+        }
+
+        let _ = io::stdout().flush();
     }
 
     fn getchar() -> Option<u16> {
