@@ -115,10 +115,10 @@ impl LC3VM {
         }
         println!("");
         println!("MEMORY: ");
-        let from = 0; //PC_START as usize;
-        let to = from + 100;
+        let from = PC_START as usize; //PC_START as usize;
+        let to = from + 1024;
         for (idx, line) in self.memory[from..to].iter().enumerate() {
-            println!("[{:0>4}] {}", idx + from, line);
+            println!("[{:0>4}] {:0>16b}", idx + from, line);
         }
 
         println!("");
