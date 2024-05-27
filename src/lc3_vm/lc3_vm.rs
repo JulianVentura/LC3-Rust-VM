@@ -2,6 +2,7 @@
 use super::constants::{MEMORY_MAX, PC_START};
 use super::instruction_table::{FieldInfo, INST_TABLE};
 use super::MAX_PROGRAM_SIZE;
+use std::io::{self, Write};
 
 //Warning, potential bug.
 //It would be nicer to have this directly linked to the REG enum
@@ -318,9 +319,35 @@ impl LC3VM {
         let mut keep_going = true;
 
         match trap_code {
-            _ => {}
+            code if code == TRAP::PUTS as u16 => self.puts(),
+            code if code == TRAP::HALT as u16 => {
+                keep_going = false;
+            }
+            _ => panic!("Not implemented"),
         };
+
         keep_going
+    }
+
+    fn puts(&self) {
+        let mut mem_address = self.reg[REG::R0 as usize];
+
+        loop {
+            let c = self.memory[mem_address as usize];
+            if c == 0 {
+                return;
+            }
+
+            let converted_char = char::from_u32(c as u32);
+
+            if let Some(c) = converted_char {
+                print!("{c}");
+            }
+
+            let _ = io::stdout().flush();
+
+            mem_address += 1;
+        }
     }
 
     fn sum(a: u16, b: u16) -> u16 {
